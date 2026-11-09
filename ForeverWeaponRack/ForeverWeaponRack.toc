@@ -1,0 +1,51 @@
+## Interface: 16001
+# ---------------------------------------------------------------------------
+# INTERFACE VERSION: 16001 is the number used by ForeverAuras, which loads
+# without the "out of date" warning in WoW Forever 1.60.x. If Forever patches
+# and the add-on list starts showing "Out of date", type this in game:
+#
+#     /dump (select(4, GetBuildInfo()))
+#
+# and put the number it prints on the "## Interface:" line above.
+# ---------------------------------------------------------------------------
+## Title: ForeverWeaponRack
+## Notes: Weapon set swapper for WoW Forever. Save Main Hand, Off Hand, Ranged and Ammo sets, bind keys, and swap in combat. |cffff8800EXPERIMENTAL|r
+## Author: Azotorp
+## Version: 0.1.0-experimental
+## X-Flavor: Forever
+## IconTexture: Interface\Icons\INV_Sword_04
+## SavedVariables: ForeverWeaponRackDB
+## SavedVariablesPerCharacter: ForeverWeaponRackCharDB
+
+# Core and saved data
+Core.lua
+Locale.lua
+Data.lua
+
+# Items: classification, tooltip detection, identity
+ItemInfo.lua
+Tooltip.lua
+Identity.lua
+
+# Sets, swapping, queue, toggle, key bindings
+Sets.lua
+Queue.lua
+Swap.lua
+Toggle.lua
+Bindings.lua
+
+# User interface
+UI\Widgets.lua
+UI\FakeCursor.lua
+UI\SlotButton.lua
+UI\Flyout.lua
+UI\EditTab.lua
+UI\SetsTab.lua
+UI\MainWindow.lua
+UI\Minimap.lua
+
+# Settings, slash commands, debug, startup
+Settings.lua
+Slash.lua
+Debug.lua
+Init.lua
