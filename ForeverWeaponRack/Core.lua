@@ -37,18 +37,23 @@ FWR.SafeCall = SafeCall
 local eventFrame = CreateFrame("Frame")
 local eventHandlers = {}
 
+-- Returns false if the client doesn't know the event (registering an unknown
+-- event is an error on modern clients, and Forever may lack some events).
 function FWR:RegisterEvent(event, fn, unit)
   local list = eventHandlers[event]
   if not list then
+    local ok
+    if unit then
+      ok = pcall(eventFrame.RegisterUnitEvent, eventFrame, event, unit)
+    else
+      ok = pcall(eventFrame.RegisterEvent, eventFrame, event)
+    end
+    if not ok then return false end
     list = {}
     eventHandlers[event] = list
-    if unit then
-      eventFrame:RegisterUnitEvent(event, unit)
-    else
-      eventFrame:RegisterEvent(event)
-    end
   end
   list[#list + 1] = fn
+  return true
 end
 
 function FWR:UnregisterEvent(event, fn)
@@ -319,11 +324,13 @@ function Util.FormatToPattern(fmt)
   -- Placeholder tokens that survive escaping.
   s = s:gsub("%%%%", "\004")             -- a literal percent sign
   s = s:gsub("|4[^;]*;", "\001")         -- singular/plural grammar code
-  s = s:gsub("%%%d*%$?[sd]", "\002")     -- %s, %d, %1$s
+  s = s:gsub("%%%d*%$?s", "\002")        -- %s, %1$s
+  s = s:gsub("%%%d*%$?d", "\005")        -- %d, %1$d
   s = s:gsub("%%%.?%d*f", "\003")        -- %f, %.1f
   s = Util.EscapePattern(s)
   s = s:gsub("\001", ".-")
   s = s:gsub("\002", "(.-)")
+  s = s:gsub("\005", "(%%d+)")
   s = s:gsub("\003", "([%%d%%.,]+)")
   s = s:gsub("\004", "%%%%")
   return "^" .. s .. "$"
