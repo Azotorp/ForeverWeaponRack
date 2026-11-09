@@ -2,7 +2,10 @@
 local test, check, eq, S, FWR = T.test, T.check, T.eq, T.S, T.FWR
 
 local confirmCalls = {}
-FWR.Confirm = function(text, onAccept) confirmCalls[#confirmCalls + 1] = { text = text, accept = onAccept } end
+local function installConfirm()
+  confirmCalls = {}
+  FWR.Confirm = function(text, onAccept) confirmCalls[#confirmCalls + 1] = { text = text, accept = onAccept } end
+end
 
 local function ref(id, enchant)
   local link = S.Link(id, enchant)
@@ -124,7 +127,7 @@ test("Ranged and ammo", function()
 end)
 
 test("Unbound BoE asks first; Accept equips", function()
-  confirmCalls = {}
+  installConfirm()
   S.bags[0][1] = S.Item(600)
   local set = makeSet("New", { MAINHAND = 600 })
   eq(equipSet(set), "nothing", "waits for the popup")
