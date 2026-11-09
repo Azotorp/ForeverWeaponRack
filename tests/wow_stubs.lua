@@ -288,7 +288,11 @@ local function Drop(dest)
       return
     end
     if not Fits(held.item, dest.inv) then return Fail("wrong slot") end
-    if S.combat and S.blockCombat then return Fail("combat") end
+    if S.combat and S.blockCombat then
+      Fail("combat")
+      S.Fire("ADDON_ACTION_BLOCKED", "ForeverWeaponRack", "PickupInventoryItem()")
+      return
+    end
     local old
     -- 2H into MH pushes the off hand into the bags.
     if dest.inv == 16 and S.items[held.item.id].equipLoc == "INVTYPE_2HWEAPON" and S.equipped[17]
