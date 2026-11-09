@@ -86,23 +86,81 @@ local frameMeta = {}
 frameMeta.__index = function(self, key)
   local v = rawget(frameMeta, key)
   if v then return v end
+  -- Internal fields and add-on fields stay nil; unknown methods are no-ops.
+  if type(key) == "string" and (key:sub(1, 2) == "__" or key:sub(1, 3) == "fwr" or key:match("^%l")) then
+    return nil
+  end
   return function() return nil end
+end
+local function NewObject(parent, name)
+  return setmetatable({ __events = {}, __scripts = {}, __shown = true, __name = name, __parent = parent,
+                        __text = nil, __w = 100, __h = 20, __enabled = true, __checked = false }, frameMeta)
 end
 function frameMeta.RegisterEvent(self, event) self.__events[event] = true; S.events[self] = true end
 function frameMeta.RegisterUnitEvent(self, event) self.__events[event] = true; S.events[self] = true end
 function frameMeta.UnregisterEvent(self, event) self.__events[event] = nil end
 function frameMeta.SetScript(self, name, fn) self.__scripts[name] = fn end
 function frameMeta.GetScript(self, name) return self.__scripts[name] end
+function frameMeta.HookScript(self, name, fn)
+  local old = self.__scripts[name]
+  self.__scripts[name] = function(...) if old then old(...) end fn(...) end
+end
 function frameMeta.IsShown(self) return self.__shown end
-function frameMeta.IsVisible(self) return self.__shown end
-function frameMeta.Show(self) self.__shown = true end
-function frameMeta.Hide(self) self.__shown = false end
+function frameMeta.IsVisible(self)
+  local f = self
+  while f do
+    if not f.__shown then return false end
+    f = f.__parent
+  end
+  return true
+end
+function frameMeta.Show(self)
+  local was = self.__shown
+  self.__shown = true
+  if not was and self.__scripts.OnShow then self.__scripts.OnShow(self) end
+end
+function frameMeta.Hide(self)
+  local was = self.__shown
+  self.__shown = false
+  if was and self.__scripts.OnHide then self.__scripts.OnHide(self) end
+end
+function frameMeta.SetShown(self, show) if show then self:Show() else self:Hide() end end
 function frameMeta.GetName(self) return self.__name end
-function frameMeta.CreateTexture(self) return setmetatable({ __events = {}, __scripts = {} }, frameMeta) end
-function frameMeta.CreateFontString(self) return setmetatable({ __events = {}, __scripts = {} }, frameMeta) end
+function frameMeta.GetParent(self) return self.__parent end
+function frameMeta.CreateTexture(self) return NewObject(self) end
+function frameMeta.CreateFontString(self) return NewObject(self) end
+function frameMeta.SetText(self, t) self.__text = t end
+function frameMeta.GetText(self) return self.__text end
+function frameMeta.SetChecked(self, v) self.__checked = v and true or false end
+function frameMeta.GetChecked(self) return self.__checked end
+function frameMeta.SetEnabled(self, v) self.__enabled = v and true or false end
+function frameMeta.Enable(self) self.__enabled = true end
+function frameMeta.Disable(self) self.__enabled = false end
+function frameMeta.IsEnabled(self) return self.__enabled end
+function frameMeta.SetSize(self, w, h) self.__w, self.__h = w, h end
+function frameMeta.SetWidth(self, w) self.__w = w end
+function frameMeta.SetHeight(self, h) self.__h = h end
+function frameMeta.GetWidth(self) return self.__w end
+function frameMeta.GetHeight(self) return self.__h end
+function frameMeta.GetStringHeight() return 14 end
+function frameMeta.GetEffectiveScale() return 1 end
+function frameMeta.GetScale() return 1 end
+function frameMeta.GetRight() return 300 end
+function frameMeta.GetLeft() return 200 end
+function frameMeta.GetTop() return 500 end
+function frameMeta.GetBottom() return 400 end
+function frameMeta.GetCenter() return 250, 450 end
+function frameMeta.GetPoint() return "CENTER", nil, "CENTER", 0, 0 end
+function frameMeta.IsMouseOver(self) return self.__mouseOver or false end
+function frameMeta.HasFocus() return false end
+function frameMeta.NumLines() return 0 end
+function frameMeta.GetTextColor() return 1, 1, 1 end
+function frameMeta.Click(self, button, down)
+  if self.__scripts.OnClick then self.__scripts.OnClick(self, button or "LeftButton", down) end
+end
 
-function _G.CreateFrame(_, name)
-  local f = setmetatable({ __events = {}, __scripts = {}, __shown = true, __name = name }, frameMeta)
+function _G.CreateFrame(_, name, parent)
+  local f = NewObject(parent, name)
   if name then _G[name] = f end
   return f
 end
@@ -120,6 +178,20 @@ _G.DEFAULT_CHAT_FRAME = { AddMessage = function(_, msg) S.chat[#S.chat + 1] = ms
 _G.UIErrorsFrame = { AddMessage = function(_, msg) S.uiErrors[#S.uiErrors + 1] = msg end }
 _G.UIParent = CreateFrame("Frame")
 _G.WorldFrame = CreateFrame("Frame")
+_G.Minimap = CreateFrame("Frame")
+_G.GameTooltip = CreateFrame("GameTooltip")
+_G.UISpecialFrames = {}
+_G.SlashCmdList = {}
+_G.tinsert = table.insert
+_G.ChatFontNormal = {}
+function _G.GetBuildInfo() return "1.60.0", "99999", "Nov 1 2026", 16001 end
+function _G.GetCursorPosition() return 500, 500 end
+function _G.GetBindingText(key) return key end
+function _G.IsModifiedClick() return false end
+function _G.IsAltKeyDown() return false end
+function _G.IsControlKeyDown() return false end
+function _G.IsShiftKeyDown() return S.shift or false end
+function _G.GetMinimapShape() return "ROUND" end
 
 ------------------------------------------------------------------------------
 -- Items

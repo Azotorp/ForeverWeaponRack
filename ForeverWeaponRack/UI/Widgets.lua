@@ -116,13 +116,16 @@ function UI.Slider(parent, text, minValue, maxValue, step, formatValue, onChange
   slider:SetMinMaxValues(minValue, maxValue)
   slider:SetValueStep(step)
   if slider.SetObeyStepOnDrag then slider:SetObeyStepOnDrag(true) end
-  slider:SetScript("OnValueChanged", function(_, value, userInput)
+  slider:SetScript("OnValueChanged", function(_, value)
     valueText:SetText(formatValue(value))
-    if userInput ~= false then onChange(value) end
+    -- Only react to the player dragging, not to SetValue from a refresh.
+    if not holder.silent then onChange(value) end
   end)
   holder.slider = slider
   function holder:SetValue(value)
+    self.silent = true
     slider:SetValue(value)
+    self.silent = false
     valueText:SetText(formatValue(value))
   end
   return holder
