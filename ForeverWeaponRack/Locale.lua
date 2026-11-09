@@ -129,6 +129,7 @@ L.ERR_NEVER = G("ERR_CANT_EQUIP_EVER", "You can never use that item.")
 L.ERR_NOT_EQUIPPABLE = G("ERR_ITEM_CANT_BE_EQUIPPED", "That item can't be equipped.")
 L.AMMO_AUTO_PICKED = "Picked your best ammo: %s"
 L.AMMO_NONE = "You have no matching ammo."
+L.FLYOUT_EMPTY = "Nothing in your bags fits here."
 
 -- Key bindings
 L.KEY_PRESS = "Press a key"
