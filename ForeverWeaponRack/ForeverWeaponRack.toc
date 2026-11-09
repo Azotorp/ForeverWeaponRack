@@ -11,7 +11,7 @@
 ## Title: ForeverWeaponRack
 ## Notes: Weapon set swapper for WoW Forever. Save Main Hand, Off Hand, Ranged and Ammo sets, bind keys, and swap in combat. |cffff8800EXPERIMENTAL|r
 ## Author: Azotorp
-## Version: 0.1.0-experimental
+## Version: 0.1.1-experimental
 ## X-Flavor: Forever
 ## IconTexture: Interface\Icons\INV_Sword_04
 ## SavedVariables: ForeverWeaponRackDB

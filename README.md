@@ -64,6 +64,7 @@ The **Equipment Toggle** key is set in **Settings** (the gear button, or Esc > O
 | `/fwr equip <set name>` | Equip a set by name (works in macros) |
 | `/fwr settings` | Open the settings |
 | `/fwr debug` | Testing report (see the Testing Checklist) |
+| `/fwr debug swaps` | The last swaps, move by move, with any game errors |
 | `/fwr help` | List the commands |
 
 `/weaponrack` and `/wr` work the same way. If another add-on also uses `/wr`, the one that loads last gets it. `/fwr` and `/weaponrack` keep working.
@@ -77,10 +78,11 @@ Set keys and the Equipment Toggle key are stored by the add-on and go live throu
 - If a key is already used (by the default UI, an action bar add-on, or anything else), you're asked first. If you accept, our key wins on this character. The other binding is kept, and it comes back if you clear our key or disable the add-on.
 - They don't appear in the game's Key Bindings list. Set them in the add-on.
 - Key changes made in combat are saved right away and go live when combat ends.
+- Under the hood each key runs a hidden key command from `Bindings.xml`. That is the same path ItemRack Forever uses, and it's what lets swaps run in combat.
 
 ## Reporting problems
 
-1. Type `/fwr debug`. A window opens with a report: press Ctrl+A, then Ctrl+C to copy it.
+1. Type `/fwr debug` (or `/fwr debug swaps` for a swap that didn't work). A window opens with a report: press Ctrl+A, then Ctrl+C to copy it.
 2. Open an issue on this repository with the report, what you did, and what happened.
 
 The [Testing Checklist](https://github.com/Azotorp/ForeverWeaponRack/wiki/Testing-Checklist) in the wiki lists everything that still needs confirming in WoW Forever.
@@ -103,7 +105,7 @@ The add-on uses no libraries. The code is split by job:
 | `Identity.lua` | Bag scan, telling copies apart, "already wearing" |
 | `Sets.lua` | Sets, slot states, smart rules, drafts |
 | `Swap.lua`, `Queue.lua`, `Toggle.lua` | Swapping, the queue, Equipment Toggle |
-| `Bindings.lua` | Keys, shared-key cycling, conflicts |
+| `Bindings.lua`, `Bindings.xml` | Keys, shared-key cycling, conflicts, the hidden key commands |
 | `UI/*.lua` | Window, tabs, slots, fake cursor, flyout, minimap |
 | `Settings.lua`, `Slash.lua`, `Debug.lua`, `Init.lua` | Settings, commands, testing output, startup |
 

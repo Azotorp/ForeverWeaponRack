@@ -236,7 +236,7 @@ test("Equipment Toggle: sold item warns, re-equips the rest", function()
   check(warned, "warned")
 end)
 
-test("Plan: 2H displacement counts bag space", function()
+test("Plan: a two-hander puts the off hand away first, in the same press", function()
   local equipped = {
     MAINHAND = { key = "inv:16", where = "inv", inv = 16, slotKey = "MAINHAND", equipLoc = "INVTYPE_WEAPON", link = S.Link(100) },
     OFFHAND = { key = "inv:17", where = "inv", inv = 17, slotKey = "OFFHAND", equipLoc = "INVTYPE_SHIELD", link = S.Link(300) },
@@ -247,6 +247,9 @@ test("Plan: 2H displacement counts bag space", function()
     RANGED = { state = "skip" }, AMMO = { state = "skip" },
   }
   local plan = FWR.Swap.Plan(desired, equipped, nil)
-  eq(#plan.ops, 1, "one equip")
+  eq(#plan.ops, 2, "shield off, then the two-hander on")
+  eq(plan.ops[1].kind, "unequip", "off hand first")
+  eq(plan.ops[1].slotKey, "OFFHAND")
+  eq(plan.ops[2].kind, "equip", "then the two-hander")
   eq(plan.bagSlotsNeeded, 1, "shield needs a slot")
 end)

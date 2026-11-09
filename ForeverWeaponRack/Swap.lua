@@ -128,22 +128,17 @@ function Swap.Plan(desired, equipped, equippedAmmoId)
     local old = occ[slotKey]
     if from == nil or from == "bag" then
       local pos = bagPos[entry.key] or { bag = entry.bag, slot = entry.slot }
+      -- Put the other hand away first, in the same key press: the off hand
+      -- before a two-hander goes on, or a two-hander before an off-hand item
+      -- goes on. (ItemRack Forever does the same, and it works in combat.)
+      if slotKey == "MAINHAND" and Is2H(entry) and occ.OFFHAND then
+        Unequip("OFFHAND")
+      elseif slotKey == "OFFHAND" and Is2H(occ.MAINHAND) then
+        Unequip("MAINHAND")
+      end
       local op = { kind = "equip", bag = pos.bag, slot = pos.slot, slotKey = slotKey,
                    inv = invId(slotKey), entry = entry,
                    touches = { "bag:" .. pos.bag .. ":" .. pos.slot, "inv:" .. invId(slotKey) } }
-      -- The game moves the other hand to the bags by itself when a two-hander
-      -- goes on, or when an off-hand goes on while holding a two-hander.
-      if slotKey == "MAINHAND" and Is2H(entry) and occ.OFFHAND then
-        where[occ.OFFHAND.key] = "gone"
-        occ.OFFHAND = nil
-        needed = needed + 1
-        op.touches[#op.touches + 1] = "inv:" .. invId("OFFHAND")
-      elseif slotKey == "OFFHAND" and Is2H(occ.MAINHAND) then
-        where[occ.MAINHAND.key] = "gone"
-        occ.MAINHAND = nil
-        needed = needed + 1
-        op.touches[#op.touches + 1] = "inv:" .. invId("MAINHAND")
-      end
       ops[#ops + 1] = op
       occ[slotKey] = entry
       where[entry.key] = slotKey
@@ -236,9 +231,9 @@ local function Move(pickup, drop)
   return true
 end
 
--- Free bag slots for explicit unequips are taken from the END of the list:
--- when the game itself moves an off hand into the bags (two-hander rules) it
--- uses the first free slot, so the two never collide.
+-- Free bag slots for unequips are taken from the END of the list, away from
+-- where the game puts things by itself, so a move never lands on a slot the
+-- game is filling at the same moment.
 local function TakeFreeSlot(free)
   return table.remove(free)
 end
@@ -279,6 +274,61 @@ function Swap.ExecuteOp(op, free)
 end
 
 ------------------------------------------------------------------------------
+-- Swap log: the last few requests and what happened to them, so a failed
+-- swap in game can be reported with /fwr debug swaps.
+------------------------------------------------------------------------------
+
+Swap.history = {}
+local MAX_HISTORY = 15
+local MAX_NOTES = 24
+local activeLog   -- log entry of the request being handled right now
+
+local function NewLog(request)
+  local what
+  if request.kind == "toggle" then
+    what = L.TOGGLE_NAME
+  elseif request.kind == "key" then
+    what = "key " .. tostring(request.key)
+  else
+    local set = FWR.Sets.Get(request.setId)
+    what = set and set.name or "?"
+  end
+  local entry = {
+    at = date("%H:%M:%S"), source = request.source or "?", what = what,
+    combat = InCombatLockdown() and true or false,
+    result = "?", passes = 0, sent = 0, refused = 0, notes = {},
+  }
+  table.insert(Swap.history, 1, entry)
+  if #Swap.history > MAX_HISTORY then table.remove(Swap.history) end
+  activeLog = entry
+  return entry
+end
+
+local function CurrentLog()
+  return (Swap.current and Swap.current.log) or activeLog
+end
+
+function Swap.Note(text)
+  local entry = CurrentLog()
+  if entry and #entry.notes < MAX_NOTES then entry.notes[#entry.notes + 1] = tostring(text) end
+end
+
+local function LogResult(text)
+  local entry = CurrentLog()
+  if entry then entry.result = text end
+end
+
+-- Called by Bindings.Press when a key press hits a Lua error. If the error
+-- came before this press got its own log entry, it gets one now.
+function Swap.LogError(err, request)
+  if request and (not activeLog or activeLog.request ~= request) and not Swap.current then
+    NewLog(request).request = request
+  end
+  Swap.Note("Lua error: " .. tostring(err))
+  LogResult("Lua error")
+end
+
+------------------------------------------------------------------------------
 -- Jobs: one running swap
 --   job = {
 --     request   the request that started it
@@ -305,6 +355,7 @@ function Swap.Finish(success, quiet)
   ClearStrayCursor()
   Identity.Invalidate()
   if job then
+    if job.log then job.log.result = success and "done" or "failed: the game refused a move" end
     if not success and not quiet then
       FWR:ErrorAndPrint(L.SWAP_FAILED)
     end
@@ -329,7 +380,9 @@ function Swap.AbortForCombat()
   -- A press made during this swap is newer, so it wins the queue slot.
   local request = Swap.pending or job.request
   Swap.pending = nil
+  local log = job.log
   Swap.Finish(false, true)
+  if log then log.result = "blocked by the game in combat, queued for after combat" end
   if request then
     FWR.Queue.Set(request, "combat")
   end
@@ -355,6 +408,7 @@ function Swap.RunPass()
   local equipped, ammoId = Swap.EquippedSnapshot()
   local plan = Swap.Plan(desired, equipped, ammoId)
 
+  if job.log then job.log.passes = job.passes end
   if #plan.ops == 0 then
     return Swap.Finish(true)
   end
@@ -371,12 +425,17 @@ function Swap.RunPass()
     for _, location in ipairs(op.touches) do
       if touched[location] or IsLocationLocked(location) then blocked = true break end
     end
+    local opName = op.kind .. " " .. (op.slotKey or "AMMO")
     if not blocked then
       if Swap.ExecuteOp(op, free) then
         ran = ran + 1
+        Swap.Note(("pass %d: %s sent"):format(job.passes, opName))
       else
         failed = failed + 1
+        Swap.Note(("pass %d: %s refused (item stayed put)"):format(job.passes, opName))
       end
+    else
+      Swap.Note(("pass %d: %s waits for the previous move"):format(job.passes, opName))
     end
     -- Later moves that touch the same places wait for the next pass.
     for _, location in ipairs(op.touches) do touched[location] = true end
@@ -387,6 +446,10 @@ function Swap.RunPass()
     end
   end
   Swap.inPass = false
+  if job.log then
+    job.log.sent = job.log.sent + ran
+    job.log.refused = job.log.refused + failed
+  end
 
   if ran == 0 and failed > 0 then
     return Swap.Finish(false)
@@ -423,9 +486,11 @@ FWR:RegisterEvent("UNIT_INVENTORY_CHANGED", OnLockEvent, "player")
 -- If the game blocks our calls in combat, queue instead (see Queue.lua).
 -- The event names the add-on; a block that fires while our own moves are
 -- running in combat is treated as ours too, in case the name differs.
-local function OnActionBlocked(_, addonName)
+local function OnActionBlocked(event, addonName, func)
   if not Swap.current then return end
   if FWR.IsSecret(addonName) then addonName = nil end
+  if FWR.IsSecret(func) then func = nil end
+  Swap.Note(("%s: %s %s"):format(event, tostring(addonName), tostring(func)))
   if addonName == FWR.name or (Swap.inPass and InCombatLockdown()) then
     Swap.AbortForCombat()
   end
@@ -434,8 +499,10 @@ FWR:RegisterEvent("ADDON_ACTION_BLOCKED", OnActionBlocked)
 FWR:RegisterEvent("ADDON_ACTION_FORBIDDEN", OnActionBlocked)
 
 FWR:RegisterEvent("UI_ERROR_MESSAGE", function(_, _, message)
-  if not Swap.current or not InCombatLockdown() then return end
+  if not Swap.current then return end
   if FWR.IsSecret(message) then return end
+  Swap.Note("game error: " .. tostring(message))
+  if not InCombatLockdown() then return end
   if message and (message == _G.ERR_NOT_IN_COMBAT or message == _G.ERR_AFFECTING_COMBAT) then
     Swap.AbortForCombat()
   end
@@ -490,8 +557,10 @@ end
 ]]
 function Swap.StartJob(job, opts)
   opts = opts or {}
-  if CursorHasItem() then
+  job.log = activeLog
+  if CursorHasItem() or (SpellIsTargeting and SpellIsTargeting()) then
     FWR:ErrorText(L.SWAP_CURSOR_BUSY)
+    LogResult("cancelled: the cursor is holding an item or a spell")
     return false
   end
 
@@ -504,6 +573,7 @@ function Swap.StartJob(job, opts)
     if missing then
       FWR:ErrorAndPrint(L.SWAP_MISSING:format(job.label),
         L.SWAP_MISSING_DETAIL:format(job.label, table.concat(missing, ", ")))
+      LogResult("cancelled: missing " .. table.concat(missing, ", "))
       return false
     end
   end
@@ -514,6 +584,7 @@ function Swap.StartJob(job, opts)
     if job.request and job.request.source ~= "key" and job.request.source ~= "queue" then
       FWR:Print(L.SWAP_NOTHING:format(job.label))
     end
+    LogResult("nothing to do: already wearing it")
     if job.onFinish then FWR.SafeCall(job.onFinish, true) end
     return false
   end
@@ -523,6 +594,7 @@ function Swap.StartJob(job, opts)
   if plan.bagSlotsNeeded > #free then
     FWR:ErrorAndPrint(L.SWAP_BAGS_FULL,
       L.SWAP_BAGS_FULL_DETAIL:format(job.label, plan.bagSlotsNeeded, #free))
+    LogResult(("cancelled: bags full (needs %d, has %d)"):format(plan.bagSlotsNeeded, #free))
     return false
   end
 
@@ -542,11 +614,13 @@ function Swap.StartJob(job, opts)
           Swap.StartJob(job, opts)
         end
       end)
+      LogResult("waiting for the Bind on Equip / trade / refund popup")
       return false
     end
   end
 
   -- Go.
+  LogResult("moving items")
   job.passes = 0
   Swap.current = job
   Swap.busy = true
@@ -570,23 +644,31 @@ end
 -- The single entry point for every swap: keys, clicks, slash commands,
 -- the queue and the Equipment Toggle.
 function Swap.Request(request)
+  local log = NewLog(request)
+  log.request = request
   if Swap.busy then
     -- Key spam: remember only the latest press (DESIGN 6.5).
     Swap.pending = request
+    log.result = "held: runs when the swap in progress finishes"
     return "pending"
   end
 
   -- Shared keys pick their set now (cycle order, skip rule).
   if request.kind == "key" then
     local set = FWR.Bindings.PickForKey(request.key)
-    if not set then return "nothing" end
+    if not set then
+      log.result = "nothing to do: no set on this key, or already wearing every set on it"
+      return "nothing"
+    end
     FWR.Bindings.Remember(request.key, set)
+    log.what = log.what .. " -> " .. set.name
     request = { kind = "set", setId = set.id, source = request.source, confirmed = request.confirmed }
   end
 
   local blocked = FWR.Queue.BlockReason()
   if blocked then
     FWR.Queue.Set(request, blocked)
+    log.result = "queued: waiting until " .. FWR.Queue.ReasonText(blocked)
     return "queued"
   end
 
@@ -595,7 +677,10 @@ function Swap.Request(request)
   end
 
   local set = FWR.Sets.Get(request.setId)
-  if not set then return "nothing" end
+  if not set then
+    log.result = "nothing to do: the set no longer exists"
+    return "nothing"
+  end
   local job = Swap.JobForSet(set, request)
   return Swap.StartJob(job, { confirmed = request.confirmed }) and "started" or "nothing"
 end
@@ -614,4 +699,5 @@ end
 function Swap.ResetForTests()
   StopWaitTimer()
   Swap.busy, Swap.current, Swap.pending = false, nil, nil
+  activeLog = nil
 end

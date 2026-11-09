@@ -28,7 +28,9 @@ The big one. If this fails, the Macro mode branch takes over (DESIGN 10).
 | A popup says "ForeverWeaponRack has been blocked from an action", or chat says "WoW Forever blocked equipping in combat", and the swap runs after combat | **Fail**: the queue fallback works, but Macro mode is needed |
 | Nothing happens and there's no message | **Fail**: report with `/fwr debug` |
 
-`/fwr debug` shows "combat swaps blocked this session: true/false".
+`/fwr debug` shows "combat swaps blocked this session: true/false". After the test, run `/fwr debug swaps` and paste the result: it lists every press, whether it was in combat, each move sent or refused, and any game error or block seen while it ran.
+
+*Version 0.1.0 failed this test. 0.1.1 runs keys through hidden key commands (the path ItemRack Forever uses) instead of a click on a hidden button.*
 
 ### 2. Ranged slot and relics in combat
 
@@ -83,11 +85,11 @@ The big one. If this fails, the Macro mode branch takes over (DESIGN 10).
 
 ### 10. A key press fires once
 
-Bind a set key. Press it once. The swap should happen once, not twice. Holding the key shouldn't repeat it. *(`TODO(test)`: bindings send a "down" and an "up" click; we act on the down click only.)*
+Bind a set key. Press it once. The swap should happen once, not twice. Holding the key shouldn't repeat it. `/fwr debug` lists each key and the command it runs (`FOREVERWEAPONRACK_KEY1`, …); anything else there means another add-on took the key back.
 
 ### 11. Two-hander ↔ one-hander + shield in combat
 
-Swap from a two-hander to a one-hander + shield, and back, in combat. Both weapons should end up on with one key press. If only the main hand changes, press again and note it: the second move may need its own key press in Forever.
+Swap from a two-hander to a one-hander + shield, and back, in combat. Both weapons should end up on with one key press. Going to the two-hander, the shield is put in your bags first, in the same key press (the way ItemRack Forever does it). If only one hand changes, press again, and paste `/fwr debug swaps`.
 
 ### 12. Dead and mid-cast
 

@@ -65,7 +65,7 @@ read_globals = {
   "GetInventoryItemLink", "GetInventoryItemTexture", "GetInventoryItemCount",
   "GetInventoryItemQuality", "IsInventoryItemLocked", "PickupInventoryItem",
   "GetWeaponEnchantInfo", "CursorHasItem", "GetCursorInfo", "ClearCursor",
-  "CanDualWield", "UnitHasRelicSlot", "ITEM_QUALITY_COLORS",
+  "CanDualWield", "UnitHasRelicSlot", "ITEM_QUALITY_COLORS", "SpellIsTargeting",
   "NUM_BAG_SLOTS", "BACKPACK_CONTAINER", "INVSLOT_MAINHAND", "INVSLOT_OFFHAND",
   "INVSLOT_RANGED", "INVSLOT_AMMO",
 
@@ -75,7 +75,7 @@ read_globals = {
   "GetLocale",
 
   -- Bindings
-  "SetOverrideBindingClick", "ClearOverrideBindings", "GetBindingAction",
+  "SetOverrideBindingClick", "SetOverrideBinding", "ClearOverrideBindings", "GetBindingAction",
   "GetBindingText", "GetBindingName", "GetConvertedKeyOrButton",
   "IsKeyPressIgnoredForBinding", "CreateKeyChordStringUsingMetaKeyState",
   "GetBindingKey",

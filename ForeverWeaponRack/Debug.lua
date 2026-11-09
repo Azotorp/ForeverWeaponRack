@@ -15,6 +15,9 @@
     /fwr debug <item link>      tooltip lines for a linked item (shift-click
                                 an item into the command). A link has no
                                 location, so trade/refund/temp can't show.
+    /fwr debug swaps            the last swaps: what started them, in combat
+                                or not, each move sent or refused, game errors
+                                and blocks seen while it ran (test 1)
 ]]
 
 local _, FWR = ...
@@ -125,6 +128,36 @@ local function WeaponEnchants()
   end
 end
 
+local function SwapLog(limit)
+  local history = FWR.Swap.history
+  if #history == 0 then
+    Add("  (no swaps yet this session)")
+    return
+  end
+  for i = 1, math.min(limit or #history, #history) do
+    local e = history[i]
+    Add(("  [%s] %s, from %s, in combat: %s -> %s (passes %d, moves sent %d, refused %d)"):format(
+      e.at, Plain(e.what), e.source, e.combat and "yes" or "no", Plain(e.result), e.passes, e.sent, e.refused))
+    for _, note in ipairs(e.notes) do Add("      " .. Plain(note)) end
+  end
+end
+
+-- Which command each of our keys runs right now (should be ours).
+local function KeyReport()
+  local any = false
+  for slot, key in pairs(FWR.Bindings.keyBySlot) do
+    any = true
+    Add(("  %s -> %s (expected FOREVERWEAPONRACK_KEY%d)"):format(key, Show(GetBindingAction(key, true)), slot))
+  end
+  local toggleKey = FWR.Data:GetToggleKey()
+  if toggleKey then
+    any = true
+    Add(("  %s -> %s (expected FOREVERWEAPONRACK_TOGGLE)"):format(toggleKey, Show(GetBindingAction(toggleKey, true))))
+  end
+  if not any then Add("  (no keys bound)") end
+  if FWR.Bindings.pending then Add("  Key changes are waiting for combat to end.") end
+end
+
 local function Environment()
   local version, build, date, interface = GetBuildInfo()
   Add(("ForeverWeaponRack %s debug report"):format(FWR.version))
@@ -149,6 +182,10 @@ local function Environment()
   Add("-- Test 1: combat --")
   Add("  In combat: " .. Show(InCombatLockdown()) .. ", combat swaps blocked this session: "
     .. Show(FWR.Queue.combatBlocked))
+  Add("-- Keys --")
+  KeyReport()
+  Add("-- Last swaps (/fwr debug swaps for all) --")
+  SwapLog(3)
   Add("-- Test 7: temp enchants on equipped weapons --")
   WeaponEnchants()
   for _, word in ipairs({ "mh", "oh" }) do
@@ -162,7 +199,7 @@ local function Environment()
   else
     Add("  Also registered by: " .. table.concat(clash, ", ") .. " (the last one loaded wins /wr)")
   end
-  Add("Usage: /fwr debug [mh|oh|ranged|ammo|bags|bag <bag> <slot>|<item link>]")
+  Add("Usage: /fwr debug [swaps|mh|oh|ranged|ammo|bags|bag <bag> <slot>|<item link>]")
 end
 
 local function BagSummary()
@@ -190,6 +227,9 @@ function Debug.Run(args)
     Environment()
   elseif word == "bags" then
     BagSummary()
+  elseif word == "swaps" then
+    Add("-- Last swaps, newest first --")
+    SwapLog()
   elseif word == "bag" then
     local bag, slot = args:match("^%S+%s+(%-?%d+)%s+(%d+)")
     bag, slot = tonumber(bag), tonumber(slot)
@@ -215,7 +255,7 @@ function Debug.Run(args)
     DumpLines(link, Plain(link))
     Add("(A link has no bag position, so trade, refund and temp enchants can't be read. Use /fwr debug bags.)")
   else
-    Add("Usage: /fwr debug [mh|oh|ranged|ammo|bags|bag <bag> <slot>|<item link>]")
+    Add("Usage: /fwr debug [swaps|mh|oh|ranged|ammo|bags|bag <bag> <slot>|<item link>]")
   end
 
   for _, line in ipairs(out) do

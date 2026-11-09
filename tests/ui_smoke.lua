@@ -55,7 +55,7 @@ S.bags[0][4] = S.Item(501, nil, 200)
 S.bags[0][5] = S.Item(600)
 
 _G.ClearOverrideBindings = function() end
-_G.SetOverrideBindingClick = function() end
+_G.SetOverrideBinding = function() end
 _G.GetBindingAction = function() return "" end
 
 local UI = FWR.UI
@@ -235,10 +235,11 @@ step("minimap", function()
 end)
 
 step("equipment toggle key press", function()
-  FWR.Bindings.toggleButton:Click("LeftButton", true)
+  _G.ForeverWeaponRack.OnToggleCommand()
   for _ = 1, 6 do S.Settle() end
-  FWR.Bindings.toggleButton:Click("LeftButton", true)
+  _G.ForeverWeaponRack.OnToggleCommand()
   for _ = 1, 6 do S.Settle() end
+  SlashCmdList.FOREVERWEAPONRACK("debug swaps")
 end)
 
 if #S.errors > 0 then

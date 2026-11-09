@@ -5,7 +5,7 @@
   How keys are stored (decided with the user): every key lives in the
   add-on's saved data (set keys per character, the toggle key in the
   profile or per character) and goes live through Blizzard's binding system
-  as override bindings (SetOverrideBindingClick). That means:
+  as override bindings (SetOverrideBinding). That means:
     - they work like any other key and show up to anything that asks the
       game what a key does (GetBindingAction), including other add-ons
     - they never leak to your other characters
@@ -15,8 +15,14 @@
   Binding functions are blocked in combat, so changes made in combat are
   saved right away and go live when combat ends (5.1, 6.3).
 
-  Each distinct key gets one hidden button; the binding "clicks" it. That
-  button runs the shared-key cycle (5.3): sets with the same key are tried
+  How a key press reaches the swap code: each key is bound to one of the
+  hidden commands in Bindings.xml (FOREVERWEAPONRACK_KEY1..N and
+  FOREVERWEAPONRACK_TOGGLE). The game runs the command's code straight from
+  the key press, the same path ItemRack Forever uses to swap weapons in
+  combat. (Version 0.1.0 "clicked" a hidden plain button instead, and in-game
+  testing showed that path does not swap in combat in WoW Forever.)
+
+  A command runs the shared-key cycle (5.3): sets with the same key are tried
   in list order, starting after the one this key equipped last, skipping
   sets you're already wearing.
 ]]
@@ -31,52 +37,38 @@ FWR.Bindings = Bindings
 
 Bindings.pending = false   -- changes waiting for combat to end
 
-local BUTTON_PREFIX = "ForeverWeaponRackKey"
-local TOGGLE_BUTTON = "ForeverWeaponRackToggleButton"
+local COMMAND_PREFIX = "FOREVERWEAPONRACK_KEY"
+local TOGGLE_COMMAND = "FOREVERWEAPONRACK_TOGGLE"
+-- Must match the number of FOREVERWEAPONRACK_KEYn entries in Bindings.xml.
+Bindings.MAX_KEYS = 100
+
+Bindings.keyBySlot = {}   -- command number -> key it is bound to right now
 
 local owner = CreateFrame("Frame", "ForeverWeaponRackBindingOwner", UIParent)
 
 ------------------------------------------------------------------------------
--- Hidden buttons the bindings click
+-- Key presses (called from Bindings.xml, on key down)
 ------------------------------------------------------------------------------
 
---[[
-  TODO(test): confirm a key press fires once. Modern clients send a "down"
-  and an "up" click for CLICK bindings; we register both and act on the
-  down click only. A client that sends one click without the down flag
-  (down == nil) is handled too.
-]]
-local function MakeButton(name, onPress)
-  local button = CreateFrame("Button", name, UIParent)
-  button:SetSize(1, 1)
-  button:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10, 10)
-  button:EnableMouse(false)
-  button:RegisterForClicks("AnyUp", "AnyDown")
-  button:SetScript("OnClick", function(self, _, down)
-    if down == false then return end
-    onPress(self)
+-- Run a request from a key press. Errors are logged for /fwr debug swaps and
+-- still shown by the game's error handler.
+function Bindings.Press(request)
+  local ok, err = xpcall(function() return FWR.Swap.Request(request) end, function(e)
+    FWR.Swap.LogError(e, request)
+    return e
   end)
-  return button
+  if not ok then geterrorhandler()(err) end
 end
 
-local keyButtons = {}   -- index -> button
-
-local function KeyButton(index)
-  local button = keyButtons[index]
-  if not button then
-    button = MakeButton(BUTTON_PREFIX .. index, function(self)
-      if self.fwrKey then
-        FWR.Swap.Request({ kind = "key", key = self.fwrKey, source = "key" })
-      end
-    end)
-    keyButtons[index] = button
-  end
-  return button
+function FWR.OnKeyCommand(slot)
+  local key = Bindings.keyBySlot[slot]
+  if not key then return end
+  Bindings.Press({ kind = "key", key = key, source = "key" })
 end
 
-Bindings.toggleButton = MakeButton(TOGGLE_BUTTON, function()
-  FWR.Swap.Request({ kind = "toggle", source = "key" })
-end)
+function FWR.OnToggleCommand()
+  Bindings.Press({ kind = "toggle", source = "key" })
+end
 
 ------------------------------------------------------------------------------
 -- Shared-key cycle (DESIGN 5.3)
@@ -129,22 +121,25 @@ function Bindings.Apply()
     return false
   end
   ClearOverrideBindings(owner)
-  local index = 0
+  wipe(Bindings.keyBySlot)
+  local slot = 0
   local done = {}
   for _, set in ipairs(Sets.All()) do
     local key = set.key
     if key and not done[key] then
       done[key] = true
-      index = index + 1
-      local button = KeyButton(index)
-      button.fwrKey = key
-      SetOverrideBindingClick(owner, true, key, button:GetName(), "LeftButton")
+      slot = slot + 1
+      if slot <= Bindings.MAX_KEYS then
+        Bindings.keyBySlot[slot] = key
+        SetOverrideBinding(owner, true, key, COMMAND_PREFIX .. slot)
+      elseif slot == Bindings.MAX_KEYS + 1 then
+        FWR:Warn(L.KEY_TOO_MANY:format(Bindings.MAX_KEYS))
+      end
     end
   end
-  for i = index + 1, #keyButtons do keyButtons[i].fwrKey = nil end
   local toggleKey = FWR.Data:GetToggleKey()
   if toggleKey then
-    SetOverrideBindingClick(owner, true, toggleKey, TOGGLE_BUTTON, "LeftButton")
+    SetOverrideBinding(owner, true, toggleKey, TOGGLE_COMMAND)
   end
   local wasPending = Bindings.pending
   Bindings.pending = false
@@ -234,7 +229,7 @@ function Bindings.KeyText(key)
 end
 
 local function IsOurs(action)
-  return action:find("^CLICK " .. BUTTON_PREFIX) ~= nil or action:find("^CLICK " .. TOGGLE_BUTTON) ~= nil
+  return action:find("^FOREVERWEAPONRACK_") ~= nil
 end
 
 -- What else uses this key (the default UI, action bar add-ons, any add-on).

@@ -134,30 +134,39 @@ end
          or an item link / item string.
   Returns a list of normalized lines (possibly empty).
 ]]
+-- Tooltip reads are wrapped in pcall: if the game refuses one (for example
+-- in combat), the check simply finds nothing instead of breaking a swap.
+local function Call(fn, ...)
+  local ok, result = pcall(fn, ...)
+  if ok then return result end
+  return nil
+end
+
 function Tooltip.GetLines(where)
   local data
   local api = _G.C_TooltipInfo
   if type(where) == "table" then
     if where.where == "bag" then
       if api and api.GetBagItem then
-        data = api.GetBagItem(where.bag, where.slot)
+        data = Call(api.GetBagItem, where.bag, where.slot)
       else
-        return ScanWithGameTooltip("SetBagItem", where.bag, where.slot)
+        return Call(ScanWithGameTooltip, "SetBagItem", where.bag, where.slot) or {}
       end
     elseif where.where == "inv" then
       if api and api.GetInventoryItem then
-        data = api.GetInventoryItem("player", where.inv)
+        data = Call(api.GetInventoryItem, "player", where.inv)
       else
-        return ScanWithGameTooltip("SetInventoryItem", "player", where.inv)
+        return Call(ScanWithGameTooltip, "SetInventoryItem", "player", where.inv) or {}
       end
     end
   elseif type(where) == "string" then
     if api and api.GetHyperlink then
-      data = api.GetHyperlink(where)
+      data = Call(api.GetHyperlink, where)
     else
-      return ScanWithGameTooltip("SetHyperlink", where)
+      return Call(ScanWithGameTooltip, "SetHyperlink", where) or {}
     end
   end
+  if FWR.IsSecret(data) or (type(data) == "table" and FWR.IsSecret(data.lines)) then return {} end
   local lines = {}
   if type(data) == "table" and type(data.lines) == "table" then
     for _, raw in ipairs(data.lines) do

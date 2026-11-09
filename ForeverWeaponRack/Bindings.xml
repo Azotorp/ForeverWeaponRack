@@ -1,0 +1,314 @@
+<!--
+  ForeverWeaponRack key commands.
+  The add-on binds your set keys and the Equipment Toggle key to these
+  commands with override bindings (see Bindings.lua). A key press runs the
+  command's code directly, which is what lets swaps happen in combat.
+  They are hidden from the game's Key Bindings window: set keys in the
+  add-on (Edit Set tab, Key box) and the toggle key in its Settings.
+  The number of KEY entries must match Bindings.MAX_KEYS in Bindings.lua.
+-->
+<Bindings>
+	<Binding name="FOREVERWEAPONRACK_TOGGLE" hidden="true">
+		ForeverWeaponRack.OnToggleCommand()
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY1" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(1)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY2" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(2)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY3" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(3)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY4" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(4)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY5" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(5)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY6" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(6)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY7" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(7)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY8" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(8)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY9" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(9)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY10" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(10)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY11" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(11)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY12" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(12)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY13" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(13)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY14" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(14)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY15" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(15)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY16" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(16)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY17" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(17)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY18" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(18)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY19" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(19)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY20" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(20)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY21" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(21)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY22" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(22)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY23" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(23)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY24" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(24)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY25" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(25)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY26" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(26)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY27" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(27)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY28" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(28)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY29" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(29)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY30" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(30)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY31" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(31)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY32" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(32)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY33" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(33)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY34" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(34)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY35" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(35)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY36" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(36)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY37" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(37)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY38" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(38)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY39" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(39)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY40" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(40)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY41" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(41)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY42" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(42)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY43" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(43)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY44" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(44)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY45" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(45)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY46" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(46)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY47" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(47)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY48" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(48)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY49" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(49)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY50" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(50)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY51" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(51)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY52" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(52)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY53" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(53)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY54" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(54)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY55" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(55)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY56" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(56)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY57" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(57)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY58" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(58)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY59" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(59)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY60" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(60)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY61" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(61)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY62" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(62)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY63" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(63)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY64" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(64)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY65" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(65)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY66" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(66)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY67" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(67)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY68" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(68)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY69" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(69)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY70" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(70)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY71" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(71)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY72" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(72)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY73" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(73)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY74" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(74)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY75" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(75)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY76" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(76)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY77" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(77)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY78" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(78)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY79" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(79)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY80" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(80)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY81" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(81)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY82" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(82)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY83" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(83)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY84" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(84)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY85" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(85)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY86" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(86)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY87" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(87)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY88" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(88)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY89" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(89)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY90" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(90)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY91" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(91)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY92" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(92)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY93" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(93)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY94" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(94)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY95" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(95)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY96" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(96)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY97" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(97)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY98" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(98)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY99" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(99)
+	</Binding>
+	<Binding name="FOREVERWEAPONRACK_KEY100" hidden="true">
+		ForeverWeaponRack.OnKeyCommand(100)
+	</Binding>
+</Bindings>

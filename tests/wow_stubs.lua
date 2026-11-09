@@ -36,6 +36,7 @@ function _G.geterrorhandler()
 end
 
 function _G.GetTime() return S.time end
+_G.date = os.date
 function _G.wipe(t) for k in pairs(t) do t[k] = nil end return t end
 function _G.hooksecurefunc() end
 function _G.InCombatLockdown() return S.combat end

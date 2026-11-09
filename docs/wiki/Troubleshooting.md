@@ -34,7 +34,11 @@ The game refused an equip from the add-on in combat. From then on (until you rel
 
 ## "The swap didn't finish"
 
-The game refused one of the moves, for example because an item was locked or something else used the cursor. Press the key again. If it keeps happening, report it with what you were swapping.
+The game refused one of the moves, for example because an item was locked or something else used the cursor. Press the key again. If it keeps happening, report it with `/fwr debug swaps`, which shows each move and any game error.
+
+## A key works out of combat but not in combat
+
+Make sure you have version 0.1.1 or later (the chat line at login shows the version). Then press the key in combat once and run `/fwr debug swaps`. Paste the result in an issue.
 
 ## The wrong copy of an item goes on
 
@@ -50,6 +54,6 @@ Another add-on also uses `/wr`, and it loaded last. Use `/fwr` or `/weaponrack`.
 
 ## Reporting a problem
 
-1. Type `/fwr debug` (or `/fwr debug mh`, `/fwr debug bags`, …). A window opens: press **Ctrl+A** then **Ctrl+C**.
+1. Type `/fwr debug` (or `/fwr debug swaps`, `/fwr debug mh`, `/fwr debug bags`, …). A window opens: press **Ctrl+A** then **Ctrl+C**.
 2. Open an issue at <https://github.com/Azotorp/ForeverWeaponRack/issues> with the report, what you did, and what happened.
 3. If WoW showed a Lua error, include it. The `/console scriptErrors 1` command makes errors show on screen.

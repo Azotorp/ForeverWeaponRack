@@ -148,6 +148,7 @@ L.KEY_CLICK_WARNING = "Modified mouse clicks may clash with item linking or targ
 L.KEY_ANOTHER_ADDON = "%s (another add-on's button)"
 L.KEY_PENDING = "Saved. It goes live when combat ends."
 L.KEY_BOUND = "%s bound to %s."
+L.KEY_TOO_MANY = "Only %d different set keys can be active at once. Sets on the extra keys won't respond until you free some keys."
 
 -- Swapping
 L.SWAP_MISSING = "Can't equip %s: missing items."
@@ -160,7 +161,7 @@ L.SWAP_CONFIRM_BOE = "Bind on Equip (it will become soulbound)"
 L.SWAP_CONFIRM_TRADE = "Still tradeable (equipping may end the trade window)"
 L.SWAP_CONFIRM_REFUND = "Still refundable (equipping may end the refund)"
 L.SWAP_CONFIRM_NOTE = "The game may still ask you to confirm binding."
-L.SWAP_CURSOR_BUSY = "Your cursor is holding something. Put it down first."
+L.SWAP_CURSOR_BUSY = "Your cursor is holding an item or a spell. Clear it first."
 L.SWAP_NOTHING = "\"%s\" is already equipped."
 L.SWAP_NO_SET = "No set named \"%s\"."
 L.SWAP_FAILED = "The swap didn't finish. Some items may not have moved."
@@ -205,7 +206,7 @@ L.MINIMAP_TIP_RIGHT = "Right-click: settings"
 L.MINIMAP_TIP_DRAG = "Drag: move this button"
 
 -- Slash commands
-L.SLASH_HELP = "Commands: /fwr (toggle window), /fwr equip <set name>, /fwr settings, /fwr debug [mh|oh|ranged|ammo|bags|<item link>|bag <bag> <slot>]"
+L.SLASH_HELP = "Commands: /fwr (toggle window), /fwr equip <set name>, /fwr settings, /fwr debug [swaps|mh|oh|ranged|ammo|bags|<item link>|bag <bag> <slot>]"
 
 -- Data
 L.DATA_NEWER = "Saved %s data comes from a newer version of the add-on. It was left untouched."
