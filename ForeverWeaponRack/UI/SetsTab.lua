@@ -87,6 +87,7 @@ local function CreateRow(parent, index)
   row.alert = CreateFrame("Frame", nil, row)
   row.alert:SetSize(16, 16)
   row.alert:SetPoint("LEFT", 18, 0)
+  row.alert:EnableMouse(true)   -- plain frames need this for their tooltip
   local alertTex = row.alert:CreateTexture(nil, "OVERLAY")
   alertTex:SetAllPoints()
   alertTex:SetTexture("Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew")

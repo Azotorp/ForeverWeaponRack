@@ -37,6 +37,7 @@ local Swap = {}
 FWR.Swap = Swap
 
 Swap.busy = false        -- items are moving
+Swap.inPass = false      -- our moves are being sent right now
 Swap.current = nil       -- the running job
 Swap.pending = nil       -- latest request pressed while busy (key spam)
 
@@ -364,6 +365,7 @@ function Swap.RunPass()
   local free = Swap.FreeBagSlots()
   local touched = {}
   local ran, failed = 0, 0
+  Swap.inPass = true
   for _, op in ipairs(plan.ops) do
     local blocked = false
     for _, location in ipairs(op.touches) do
@@ -379,8 +381,12 @@ function Swap.RunPass()
     -- Later moves that touch the same places wait for the next pass.
     for _, location in ipairs(op.touches) do touched[location] = true end
     -- The combat check in UI_ERROR_MESSAGE / ADDON_ACTION_* may have ended the job.
-    if Swap.current ~= job then return end
+    if Swap.current ~= job then
+      Swap.inPass = false
+      return
+    end
   end
+  Swap.inPass = false
 
   if ran == 0 and failed > 0 then
     return Swap.Finish(false)
@@ -415,8 +421,12 @@ FWR:RegisterEvent("BAG_UPDATE_DELAYED", OnLockEvent)
 FWR:RegisterEvent("UNIT_INVENTORY_CHANGED", OnLockEvent, "player")
 
 -- If the game blocks our calls in combat, queue instead (see Queue.lua).
+-- The event names the add-on; a block that fires while our own moves are
+-- running in combat is treated as ours too, in case the name differs.
 local function OnActionBlocked(_, addonName)
-  if addonName == FWR.name and Swap.current then
+  if not Swap.current then return end
+  if FWR.IsSecret(addonName) then addonName = nil end
+  if addonName == FWR.name or (Swap.inPass and InCombatLockdown()) then
     Swap.AbortForCombat()
   end
 end
